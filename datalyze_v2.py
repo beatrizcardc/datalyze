@@ -153,7 +153,7 @@ if df is not None:
     elif analise_selecionada == "Clusterização de Clientes":
         if {'idade', 'frequencia_compra', 'gasto_medio'}.issubset(df.columns):
             df_clusterizado = clusterizar_clientes(df)
-                elif analise == "Segmentação de Clientes":
+        elif analise == "Segmentação de Clientes":
         else:
             st.warning("⚠️ Necessário colunas: idade, frequencia_compra, gasto_medio")
         
