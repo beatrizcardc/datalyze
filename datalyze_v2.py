@@ -28,9 +28,9 @@ def carregar_dados(analise_selecionada):
                 
                 # Mapeamento de planilhas sugeridas por tipo de análise
                 sheet_mapping = {
-                    "Previsão de Vendas": ["Vendas", "Sales", "Transações"],
-                    "Clusterização de Clientes": ["Clientes", "Customers"],
-                    "Testes Estatísticos": ["Grupos", "Experimentos"]
+                    "Previsão de Vendas": ["Vendas"],
+                    "Clusterização de Clientes": ["Clientes"],
+                    "Testes Estatísticos": ["Testes"]
                 }
                 
                 sheets_sugeridas = sheet_mapping.get(analise_selecionada, [])
