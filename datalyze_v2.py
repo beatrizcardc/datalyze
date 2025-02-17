@@ -263,9 +263,12 @@ def clusterizar_clientes(df):
         return None
         
     
-    elif analise_selecionada == "Testes Estatísticos":
+        elif analise_selecionada == "Testes Estatísticos":
         # ... (código anterior dos testes)
         pass
+
+    # Botão fora do bloco condicional
+    st.sidebar.button("🗑️ Limpar Dados", on_click=lambda: st.session_state.pop('df', None))
 
 # Rodapé (mantido original)
 st.markdown("---")
