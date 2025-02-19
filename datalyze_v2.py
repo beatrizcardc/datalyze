@@ -92,7 +92,7 @@ def previsao_vendas_avancada(df):
                 features.extend(cols)
             elif var == 'temperatura':  # 🔢 Mantém variável numérica sem modificação
                 df['temperatura'] = pd.to_numeric(df['temperatura'], errors='coerce')  # Converte para numérico
-                    features.append(var)
+                features.append(var)
           else:
                 st.warning(f"⚠️ A variável `{var}` não foi encontrada no DataFrame. Ignorando...")      
 
