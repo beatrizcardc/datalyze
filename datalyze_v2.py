@@ -91,7 +91,7 @@ def previsao_vendas_avancada(df):
     
 # Pré-processamento das variáveis
 features = []
-encoder = OneHotEncoder(handle_unknown='ignore', sparse=False)  # Mantém compatibilidade com DataFrame
+encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)  # Mantém compatibilidade com DataFrame
 
 for var in variaveis_selecionadas:
     if var in ['dia_semana', 'produto', 'horario']:  # Variáveis categóricas que precisam de One-Hot Encoding
