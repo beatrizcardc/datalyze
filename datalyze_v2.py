@@ -149,6 +149,9 @@ if df is not None:
             previsao_vendas_avancada(df)
         else:
             st.warning("⚠️ Dados incompletos! Necessário colunas 'data' e 'vendas'.")
+
+        elif analise_selecionada == "Clusterização de Clientes":
+        clusterizar_clientes(df)
     
 def clusterizar_clientes(df):
     """Realiza a clusterização e explica os resultados para usuários leigos"""
