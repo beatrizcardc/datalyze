@@ -78,6 +78,7 @@ def previsao_vendas_avancada(df):
         variaveis_disponiveis.append('produto')
     
     # Widget de seleção de variáveis
+    variaveis_disponiveis = ['dia_semana', 'produto', 'horario', 'temperatura']
     variaveis_selecionadas = st.sidebar.multiselect(
         "Selecione fatores de influência:",
         options=variaveis_disponiveis,
@@ -88,19 +89,21 @@ def previsao_vendas_avancada(df):
     features = []
     encoder = OneHotEncoder(handle_unknown='ignore')
     
+# Pré-processamento das variáveis
+features = []
+encoder = OneHotEncoder(handle_unknown='ignore', sparse=False)  # Mantém compatibilidade com DataFrame
+
     for var in variaveis_selecionadas:
-        if var == 'dia_semana':
-            encoded = encoder.fit_transform(df[[var]]).toarray()
-            cols = [f"dia_{d}" for d in encoder.categories_[0]]
-            df[cols] = encoded
-            features.extend(cols)
-        elif var == 'produto':
-            encoded = encoder.fit_transform(df[[var]]).toarray()
-            cols = [f"prod_{p}" for p in encoder.categories_[0]]
-            df[cols] = encoded
-            features.extend(cols)
-        else:
+        if var in ['dia_semana', 'produto', 'horario']:  # Variáveis categóricas que precisam de One-Hot Encoding
+            encoded = encoder.fit_transform(df[[var]])  # Aplica a codificação
+            cols = [f"{var}_{v}" for v in encoder.categories_[0]]  # Cria nomes das colunas
+            df[cols] = encoded  # Adiciona as colunas ao DataFrame
+            features.extend(cols)  # Atualiza a lista de features
+        elif var == 'temperatura':  # Variável numérica, mantida como está
             features.append(var)
+
+    # Exibir features selecionadas para depuração
+    st.write("Variáveis processadas:", features)
     
     # Modelagem
     try:
