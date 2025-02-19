@@ -30,7 +30,7 @@ def carregar_dados(analise_selecionada):
                 sheet_mapping = {
                     "Previsão de Vendas": ["Vendas"],
                     "Clusterização de Clientes": ["Clientes"],
-                    "Testes Estatísticos": ["Testes"]
+                    "Testes": ["Testes"]
                 }
                 
                 sheets_sugeridas = sheet_mapping.get(analise_selecionada, [])
@@ -135,7 +135,7 @@ def previsao_vendas_avancada(df):
 st.sidebar.title("📂 Opções de Análise")
 analise_selecionada = st.sidebar.selectbox(
     "Escolha uma análise",
-    ["Previsão de Vendas", "Clusterização de Clientes", "Testes Estatísticos"]
+    ["Previsão de Vendas", "Clusterização de Clientes", "Testes"]
 )
 
 df = carregar_dados(analise_selecionada)
@@ -263,7 +263,7 @@ def clusterizar_clientes(df):
         return None
         
     
-elif analise_selecionada == "Testes Estatísticos":
+elif analise_selecionada == "Testes":
     st.write("### 📉 Análise Estatística Comparativa")
     
     if {'grupo', 'vendas'}.issubset(df.columns):
@@ -321,7 +321,7 @@ elif analise_selecionada == "Testes Estatísticos":
                     """)
                 else:
                     st.info("""
-                    🔍 **Conclusão:** Não foi detectada diferença significativa
+                    🔍 **Conclusão:** Não foi detectada diferença significativa.
                     """)
 
         except Exception as e:
