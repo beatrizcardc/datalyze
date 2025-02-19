@@ -63,47 +63,38 @@ def carregar_dados(analise_selecionada):
 # Função de previsão de vendas com múltiplas variáveis
 def previsao_vendas_avancada(df):
     st.sidebar.subheader("⚙️ Variáveis de Influência")
-    
-    # Verifica variáveis disponíveis
-    variaveis_disponiveis = []
-    if 'data' in df.columns:
-        df['dia_semana'] = df['data'].dt.day_name()
-        variaveis_disponiveis.append('dia_semana')
-    if 'temperatura' in df.columns:
-        variaveis_disponiveis.append('temperatura')
-    if 'horario' in df.columns:
-        df['hora'] = pd.to_datetime(df['horario']).dt.hour
-        variaveis_disponiveis.append('hora')
-    if 'produto' in df.columns:
-        variaveis_disponiveis.append('produto')
-    
-    # Widget de seleção de variáveis
+
+    # 🏷️ Definição fixa das variáveis disponíveis no template
     variaveis_disponiveis = ['dia_semana', 'produto', 'horario', 'temperatura']
+    
+    # 🏗️ Widget para seleção de variáveis
     variaveis_selecionadas = st.sidebar.multiselect(
         "Selecione fatores de influência:",
         options=variaveis_disponiveis,
         default=['dia_semana']
     )
-    
-    # Pré-processamento das variáveis
+
+    # 🚨 Verificação para evitar erro caso o usuário não selecione nada
+    if not variaveis_selecionadas:
+        st.warning("⚠️ Selecione pelo menos uma variável para análise.")
+        st.stop()
+
+    # 📌 **Pré-processamento das variáveis**
     features = []
-    encoder = OneHotEncoder(handle_unknown='ignore')
-    
-# Pré-processamento das variáveis
-features = []
-encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)  # Mantém compatibilidade com DataFrame
+    encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)  # Atualizado para sklearn 1.2+
 
-for var in variaveis_selecionadas:
-    if var in ['dia_semana', 'produto', 'horario']:  # Variáveis categóricas que precisam de One-Hot Encoding
-        encoded = encoder.fit_transform(df[[var]])  # Aplica a codificação
-        cols = [f"{var}_{v}" for v in encoder.categories_[0]]  # Cria nomes das colunas
-        df[cols] = encoded  # Adiciona as colunas ao DataFrame
-        features.extend(cols)  # Atualiza a lista de features
-    elif var == 'temperatura':  # Variável numérica, mantida como está
-        features.append(var)
+    for var in variaveis_selecionadas:
+        if var in ['dia_semana', 'produto', 'horario']:  # 📊 One-Hot Encoding para variáveis categóricas
+            encoded = encoder.fit_transform(df[[var]])
+            cols = [f"{var}_{v}" for v in encoder.categories_[0]]
+            df[cols] = encoded
+            features.extend(cols)
+        elif var == 'temperatura':  # 🔢 Mantém variável numérica sem modificação
+            features.append(var)
 
-# Exibir features selecionadas para depuração
-st.write("Variáveis processadas:", features)
+    # 📌 Exibir as variáveis processadas para debug
+    st.write("Variáveis processadas:", features)
+
 
 # Modelagem
 try:
