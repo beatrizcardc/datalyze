@@ -84,16 +84,26 @@ def previsao_vendas_avancada(df):
     encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)  # Atualizado para sklearn 1.2+
 
     for var in variaveis_selecionadas:
-        if var in ['dia_semana', 'produto', 'horario']:  # 📊 One-Hot Encoding para variáveis categóricas
-            encoded = encoder.fit_transform(df[[var]])
-            cols = [f"{var}_{v}" for v in encoder.categories_[0]]
-            df[cols] = encoded
-            features.extend(cols)
-        elif var == 'temperatura':  # 🔢 Mantém variável numérica sem modificação
-            features.append(var)
+        if var in df.columns:
+            if var in ['dia_semana', 'produto', 'horario']:  # 📊 One-Hot Encoding para variáveis categóricas
+                encoded = encoder.fit_transform(df[[var]])
+                cols = [f"{var}_{v}" for v in encoder.categories_[0]]
+                df[cols] = encoded
+                features.extend(cols)
+            elif var == 'temperatura':  # 🔢 Mantém variável numérica sem modificação
+                df['temperatura'] = pd.to_numeric(df['temperatura'], errors='coerce')  # Converte para numérico
+                    features.append(var)
+          else:
+                st.warning(f"⚠️ A variável `{var}` não foi encontrada no DataFrame. Ignorando...")      
 
-    # 📌 Exibir as variáveis processadas para debug
-    st.write("Variáveis processadas:", features)
+    # 📌 Exibir as variáveis processadas de maneira mais legível
+    if features:
+        df_features = pd.DataFrame({"Variáveis Selecionadas": features})
+        st.write("### 🔍 Variáveis Processadas")
+        st.dataframe(df_features)
+    else:
+        st.error("⚠️ Nenhuma variável foi processada. A modelagem não pode continuar.")
+        return
 
 
 # Modelagem
