@@ -93,47 +93,48 @@ def previsao_vendas_avancada(df):
 features = []
 encoder = OneHotEncoder(handle_unknown='ignore', sparse=False)  # Mantém compatibilidade com DataFrame
 
-    for var in variaveis_selecionadas:
-        if var in ['dia_semana', 'produto', 'horario']:  # Variáveis categóricas que precisam de One-Hot Encoding
-            encoded = encoder.fit_transform(df[[var]])  # Aplica a codificação
-            cols = [f"{var}_{v}" for v in encoder.categories_[0]]  # Cria nomes das colunas
-            df[cols] = encoded  # Adiciona as colunas ao DataFrame
-            features.extend(cols)  # Atualiza a lista de features
-        elif var == 'temperatura':  # Variável numérica, mantida como está
-            features.append(var)
+for var in variaveis_selecionadas:
+    if var in ['dia_semana', 'produto', 'horario']:  # Variáveis categóricas que precisam de One-Hot Encoding
+        encoded = encoder.fit_transform(df[[var]])  # Aplica a codificação
+        cols = [f"{var}_{v}" for v in encoder.categories_[0]]  # Cria nomes das colunas
+        df[cols] = encoded  # Adiciona as colunas ao DataFrame
+        features.extend(cols)  # Atualiza a lista de features
+    elif var == 'temperatura':  # Variável numérica, mantida como está
+        features.append(var)
 
-    # Exibir features selecionadas para depuração
-    st.write("Variáveis processadas:", features)
-    
-    # Modelagem
-    try:
-        model = LinearRegression()
-        model.fit(df[features], df['vendas'])
-        df['previsao'] = model.predict(df[features])
-        
-        # Visualização
-        st.write("### 📈 Modelo Preditivo Multivariado")
-        
-        fig, ax = plt.subplots(figsize=(12,6))
-        ax.plot(df['data'], df['vendas'], label='Vendas Reais')
-        ax.plot(df['data'], df['previsao'], linestyle='--', color='red', label='Previsão')
-        ax.set_xlabel("Data")
-        ax.set_ylabel("Vendas")
-        ax.legend()
-        ax.grid(True, alpha=0.3)
-        st.pyplot(fig)
-        
-        # Exibição dos coeficientes
-        st.write("### 🔍 Influência dos Fatores")
-        coeficientes = pd.DataFrame({
-            'Variável': features,
-            'Impacto': model.coef_
-        }).sort_values('Impacto', ascending=False)
-        
-        st.dataframe(coeficientes.style.bar(color='#5fba7d', subset=['Impacto']))
-        
-    except Exception as e:
-        st.error(f"Erro no modelo: {str(e)}")
+# Exibir features selecionadas para depuração
+st.write("Variáveis processadas:", features)
+
+# Modelagem
+try:
+    model = LinearRegression()
+    model.fit(df[features], df['vendas'])
+    df['previsao'] = model.predict(df[features])
+
+    # Visualização
+    st.write("### 📈 Modelo Preditivo Multivariado")
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(df['data'], df['vendas'], label='Vendas Reais')
+    ax.plot(df['data'], df['previsao'], linestyle='--', color='red', label='Previsão')
+    ax.set_xlabel("Data")
+    ax.set_ylabel("Vendas")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    st.pyplot(fig)
+
+    # Exibição dos coeficientes
+    st.write("### 🔍 Influência dos Fatores")
+    coeficientes = pd.DataFrame({
+        'Variável': features,
+        'Impacto': model.coef_
+    }).sort_values('Impacto', ascending=False)
+
+    st.dataframe(coeficientes.style.bar(color='#5fba7d', subset=['Impacto']))
+
+except Exception as e:
+    st.error(f"Erro no modelo: {str(e)}")
+
 
 def clusterizar_clientes(df):
     """Realiza a clusterização e explica os resultados para usuários leigos"""
