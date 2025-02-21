@@ -4,10 +4,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.cluster import KMeans
 from scipy.stats import ttest_ind, f_oneway
 from sklearn.preprocessing import OneHotEncoder
+
 
 # Configuração da página
 st.set_page_config(page_title="Datalyze - Análise Inteligente de Negócios", layout="wide")
@@ -152,6 +154,41 @@ def previsao_vendas_avancada(df):
 
     except Exception as e:
         st.error(f"Erro no modelo: {str(e)}")
+        
+#Novo Heatmap
+    st.write("## 🔥 Mapa de Calor - Padrão Completo de Vendas")
+    
+    if {'horario', 'dia_semana', 'produto', 'temperatura', 'vendas'}.issubset(df.columns):
+        
+        # Criar uma tabela pivot com a média de vendas por combinação de horário, dia da semana e temperatura
+        df_pivot = df.groupby(['dia_semana', 'horario']).agg({'vendas': 'sum', 'temperatura': 'mean', 'produto': 'count'}).reset_index()
+    
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        scatter = sns.scatterplot(
+            data=df_pivot, 
+            x="dia_semana", 
+            y="horario", 
+            size="produto", # Tamanho representa a quantidade de produtos vendidos
+            hue="temperatura", # Cor representa a temperatura
+            palette="coolwarm", 
+            sizes=(20, 500), # Define o tamanho dos pontos no gráfico
+            edgecolor="black", 
+            ax=ax
+        )
+    
+        ax.set_title("📊 Mapa de Calor de Vendas por Dia da Semana e Horário")
+        ax.set_xlabel("Dia da Semana")
+        ax.set_ylabel("Horário")
+        ax.grid(True, linestyle="--", alpha=0.5)
+    
+        # Criar uma legenda personalizada para representar a quantidade de vendas
+        handles, labels = scatter.get_legend_handles_labels()
+        labels[0] = "Quantidade de Produtos Vendidos"
+        labels[len(labels)//2] = "Temperatura Média"
+        ax.legend(handles, labels, title="Legendas", loc="upper right", fontsize="small")
+    
+        st.pyplot(fig)
 
 # Interface principal
 st.sidebar.title("📂 Opções de Análise")
