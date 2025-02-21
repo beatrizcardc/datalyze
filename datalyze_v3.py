@@ -112,14 +112,26 @@ def previsao_vendas_avancada(df):
         # Visualização
         st.write("### 📈 Modelo Preditivo Multivariado")
 
+        # Criar um mapeamento de dias da semana para garantir a ordem correta
+        dias_semana_ordem = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
+        
+        # Garantir que a coluna 'dia_semana' seja categórica e ordenada
+        df['dia_semana'] = pd.Categorical(df['dia_semana'], categories=dias_semana_ordem, ordered=True)
+        
+        # Agrupar os dados por dia da semana e calcular a média de vendas e previsão
+        df_grouped = df.groupby('dia_semana')[['vendas', 'previsao']].mean()
+        
+        # Criar gráfico com os dias da semana no eixo X
         fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(df['data'], df['vendas'], label='Vendas Reais', marker='o')
-        ax.plot(df['data'], df['previsao'], linestyle='--', color='red', label='Previsão', marker='s')
-        ax.set_xlabel("Data")
+        ax.plot(df_grouped.index, df_grouped['vendas'], label='Vendas Reais', marker='o')
+        ax.plot(df_grouped.index, df_grouped['previsao'], linestyle='--', color='red', label='Previsão', marker='s')
+        
+        ax.set_xlabel("Dia da Semana")
         ax.set_ylabel("Vendas")
         ax.legend()
         ax.grid(True, alpha=0.3)
         st.pyplot(fig)
+
 
         # Exibição dos coeficientes
         st.write("### 🔍 Influência dos Fatores")
