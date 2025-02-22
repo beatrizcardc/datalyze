@@ -162,10 +162,10 @@ def previsao_vendas_avancada(df):
     
     # Converter 'dia_semana' e 'produto' para valores numéricos
     df['dia_semana'] = pd.to_numeric(df['dia_semana'], errors='coerce')
-    df['produto'] = pd.to_numeric(df['produto'], errors='coerce')
+    #df['produto'] = pd.to_numeric(df['produto'], errors='coerce')
     
     # Selecionar apenas colunas numéricas para a análise de correlação
-    df_corr = df[['vendas', 'dia_semana', 'horario', 'temperatura', 'produto']].dropna()
+    df_corr = df[['vendas', 'dia_semana', 'horario', 'temperatura']].dropna()
     
     # Criar matriz de correlação
     correlacao = df_corr.corr()
