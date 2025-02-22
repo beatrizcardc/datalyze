@@ -76,6 +76,122 @@ def previsao_vendas_avancada(df):
         default=['dia_semana']
     )
 
+    #------Funçaçao de clusterização:
+    def clusterizar_clientes(df):
+    """Realiza a clusterização e explica os resultados para usuários leigos"""
+    try:
+        # Verificação das colunas necessárias
+        colunas_necessarias = {'idade', 'frequencia_compra', 'gasto_medio'}
+        if not colunas_necessarias.issubset(df.columns):
+            st.warning("""
+            🚨 **Dados incompletos!**  
+            Para esta análise, seu arquivo precisa conter:  
+            - Idade do cliente  
+            - Frequência de compras (vezes por mês)  
+            - Valor médio gasto por compra
+            """)
+            return None
+
+        # Processamento dos dados
+        with st.spinner('Analisando padrões de compra...'):
+            kmeans = KMeans(n_clusters=3, random_state=42)
+            df['cluster'] = kmeans.fit_predict(df[['idade', 'frequencia_compra', 'gasto_medio']])
+
+        # Visualização gráfica
+        fig, ax = plt.subplots(figsize=(10, 6))
+        cores = ['#FF6B6B', '#4ECDC4', '#45B7D1']
+        marcadores = ['o', 's', 'D']  # Círculo, Quadrado, Diamante
+        
+        for cluster in sorted(df['cluster'].unique()):
+            dados_cluster = df[df['cluster'] == cluster]
+            ax.scatter(
+                dados_cluster['idade'], 
+                dados_cluster['gasto_medio'],
+                s=100,
+                c=cores[cluster],
+                marker=marcadores[cluster],
+                label=f'Grupo {cluster + 1}',
+                alpha=0.7
+            )
+
+        # Configurações do gráfico
+        ax.set_title('Segmentação de Clientes por Comportamento', pad=20, fontsize=16)
+        ax.set_xlabel('Idade', labelpad=10, fontsize=12)
+        ax.set_ylabel('Gasto Médio (R$)', labelpad=10, fontsize=12)
+        ax.legend(title=' Grupos Identificados:', bbox_to_anchor=(1, 1))
+        ax.grid(True, linestyle='--', alpha=0.3)
+        
+        st.pyplot(fig)
+
+        # Explicação dos clusters
+        st.subheader("🧩 Características dos Grupos")
+        
+        # Resumo estatístico
+        resumo = df.groupby('cluster').agg({
+            'idade': ['mean', 'std'],
+            'frequencia_compra': ['mean', 'std'],
+            'gasto_medio': ['mean', 'std']
+        }).reset_index()
+        
+        resumo.columns = [
+            'Grupo', 'Idade Média', 'Variação Idade',
+            'Frequência Média', 'Variação Frequência',
+            'Gasto Médio (R$)', 'Variação Gasto'
+        ]
+
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            st.write("#### 📊 Estatísticas Básicas")
+            st.dataframe(
+                resumo.style.format({
+                    'Idade Média': '{:.1f} anos',
+                    'Variação Idade': '± {:.1f}',
+                    'Frequência Média': '{:.1f}/mês',
+                    'Variação Frequência': '± {:.1f}',
+                    'Gasto Médio (R$)': 'R$ {:.2f}',
+                    'Variação Gasto': '± R$ {:.2f}'
+                })
+            )
+
+        with col2:
+            st.write("#### 📌 Guia de Interpretação")
+            st.markdown("""
+            **Grupo 1 (Vermelho)**  
+            👥 **Perfil:** Clientes mais jovens  
+            💸 **Comportamento:**  
+            - Menor gasto por compra  
+            - Maior frequência de compras  
+            🎯 **Estratégia:** Oferecer produtos de baixo valor com promoções frequentes  
+
+            **Grupo 2 (Verde)**  
+            👥 **Perfil:** Clientes de meia-idade  
+            💸 **Comportamento:**  
+            - Gasto moderado  
+            - Frequência regular  
+            🎯 **Estratégia:** Programas de fidelidade e combos de produtos  
+
+            **Grupo 3 (Azul)**  
+            👥 **Perfil:** Clientes maduros  
+            💸 **Comportamento:**  
+            - Maior valor por compra  
+            - Menor frequência  
+            🎯 **Estratégia:** Produtos premium e atendimento personalizado  
+            """)
+
+        return df
+
+    except Exception as e:
+        st.error(f"""
+        ⚠️ **Ocorreu um erro na análise:**  
+        {str(e)}  
+        Verifique se os dados estão no formato correto e tente novamente
+        """)
+        return None
+        
+
+# Interface principal
+
     # Verificação para evitar erro caso o usuário não selecione nada
     if not variaveis_selecionadas:
         st.warning("⚠️ Selecione pelo menos uma variável para análise.")
