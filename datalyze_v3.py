@@ -157,26 +157,7 @@ def previsao_vendas_avancada(df):
     except Exception as e:
         st.error(f"Erro no modelo: {str(e)}")
 
-# 🔍 Análise de correlação das variáveis com as vendas
-    st.write("### 🔍 Influência das Variáveis sobre as Vendas")
-    
-    # Converter 'dia_semana' e 'produto' para valores numéricos
-    df['dia_semana'] = pd.to_numeric(df['dia_semana'], errors='coerce')
-    #df['produto'] = pd.to_numeric(df['produto'], errors='coerce')
-    
-    # Selecionar apenas colunas numéricas para a análise de correlação
-    df_corr = df[['vendas', 'dia_semana', 'horario', 'temperatura']].dropna()
-    
-    # Criar matriz de correlação
-    correlacao = df_corr.corr()
-    
-    # Criar o gráfico de correlação
-    fig, ax = plt.subplots(figsize=(8, 6))
-    sns.heatmap(correlacao, annot=True, cmap="coolwarm", center=0, ax=ax)
-    st.pyplot(fig)
-
-
-        
+   
 #Novo Heatmap
     st.write("## 🔥 Mapa de Calor - Padrão Completo de Vendas")
     
