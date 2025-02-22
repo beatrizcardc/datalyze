@@ -238,7 +238,7 @@ def clusterizar_clientes(df):  # ✅ Agora está no escopo global
         
         st.pyplot(fig)
 
-        return df
+        #return df
     
             # Explicação dos clusters
             st.subheader("🧩 Características dos Grupos")
