@@ -76,10 +76,7 @@ def previsao_vendas_avancada(df):
         default=['dia_semana']
     )
 
-    
-        
-
-# Interface principal
+ # Interface principal
 
     # Verificação para evitar erro caso o usuário não selecione nada
     if not variaveis_selecionadas:
@@ -238,73 +235,71 @@ def clusterizar_clientes(df):  # ✅ Agora está no escopo global
         
         st.pyplot(fig)
 
-        #return df
-    
-            # Explicação dos clusters
-            st.subheader("🧩 Características dos Grupos")
-            
-            # Resumo estatístico
-            resumo = df.groupby('cluster').agg({
-                'idade': ['mean', 'std'],
-                'frequencia_compra': ['mean', 'std'],
-                'gasto_medio': ['mean', 'std']
-            }).reset_index()
-            
-            resumo.columns = [
-                'Grupo', 'Idade Média', 'Variação Idade',
-                'Frequência Média', 'Variação Frequência',
-                'Gasto Médio (R$)', 'Variação Gasto'
-            ]
-    
-            col1, col2 = st.columns([1, 2])
-            
-            with col1:
-                st.write("#### 📊 Estatísticas Básicas")
-                st.dataframe(
-                    resumo.style.format({
-                        'Idade Média': '{:.1f} anos',
-                        'Variação Idade': '± {:.1f}',
-                        'Frequência Média': '{:.1f}/mês',
-                        'Variação Frequência': '± {:.1f}',
-                        'Gasto Médio (R$)': 'R$ {:.2f}',
-                        'Variação Gasto': '± R$ {:.2f}'
-                    })
-                )
-    
-            with col2:
-                st.write("#### 📌 Guia de Interpretação")
-                st.markdown("""
-                **Grupo 1 (Vermelho)**  
-                👥 **Perfil:** Clientes mais jovens  
-                💸 **Comportamento:**  
-                - Menor gasto por compra  
-                - Maior frequência de compras  
-                🎯 **Estratégia:** Oferecer produtos de baixo valor com promoções frequentes  
-    
-                **Grupo 2 (Verde)**  
-                👥 **Perfil:** Clientes de meia-idade  
-                💸 **Comportamento:**  
-                - Gasto moderado  
-                - Frequência regular  
-                🎯 **Estratégia:** Programas de fidelidade e combos de produtos  
-    
-                **Grupo 3 (Azul)**  
-                👥 **Perfil:** Clientes maduros  
-                💸 **Comportamento:**  
-                - Maior valor por compra  
-                - Menor frequência  
-                🎯 **Estratégia:** Produtos premium e atendimento personalizado  
-                """)
-    
-            return df
-    
-        except Exception as e:
-            st.error(f"""
-            ⚠️ **Ocorreu um erro na análise:**  
-            {str(e)}  
-            Verifique se os dados estão no formato correto e tente novamente
+        # Explicação dos clusters
+        st.subheader("🧩 Características dos Grupos")
+        
+        # Resumo estatístico
+        resumo = df.groupby('cluster').agg({
+            'idade': ['mean', 'std'],
+            'frequencia_compra': ['mean', 'std'],
+            'gasto_medio': ['mean', 'std']
+        }).reset_index()
+        
+        resumo.columns = [
+            'Grupo', 'Idade Média', 'Variação Idade',
+            'Frequência Média', 'Variação Frequência',
+            'Gasto Médio (R$)', 'Variação Gasto'
+        ]
+
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            st.write("#### 📊 Estatísticas Básicas")
+            st.dataframe(
+                resumo.style.format({
+                    'Idade Média': '{:.1f} anos',
+                    'Variação Idade': '± {:.1f}',
+                    'Frequência Média': '{:.1f}/mês',
+                    'Variação Frequência': '± {:.1f}',
+                    'Gasto Médio (R$)': 'R$ {:.2f}',
+                    'Variação Gasto': '± R$ {:.2f}'
+                })
+            )
+
+        with col2:
+            st.write("#### 📌 Guia de Interpretação")
+            st.markdown("""
+            **Grupo 1 (Vermelho)**  
+            👥 **Perfil:** Clientes mais jovens  
+            💸 **Comportamento:**  
+            - Menor gasto por compra  
+            - Maior frequência de compras  
+            🎯 **Estratégia:** Oferecer produtos de baixo valor com promoções frequentes  
+
+            **Grupo 2 (Verde)**  
+            👥 **Perfil:** Clientes de meia-idade  
+            💸 **Comportamento:**  
+            - Gasto moderado  
+            - Frequência regular  
+            🎯 **Estratégia:** Programas de fidelidade e combos de produtos  
+
+            **Grupo 3 (Azul)**  
+            👥 **Perfil:** Clientes maduros  
+            💸 **Comportamento:**  
+            - Maior valor por compra  
+            - Menor frequência  
+            🎯 **Estratégia:** Produtos premium e atendimento personalizado  
             """)
-            return None
+
+        return df
+
+    except Exception as e:
+        st.error(f"""
+        ⚠️ **Ocorreu um erro na análise:**  
+        {str(e)}  
+        Verifique se os dados estão no formato correto e tente novamente
+        """)
+        return None
 
 # Interface principal
 st.sidebar.title("📂 Opções de Análise")
