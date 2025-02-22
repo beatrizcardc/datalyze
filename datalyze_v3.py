@@ -327,7 +327,8 @@ if df is not None:
 
     elif analise_selecionada == "Clusterização de Clientes":
         if {'idade', 'frequencia_compra', 'gasto_medio'}.issubset(df.columns):
-            df = clusterizar_clientes(df)  # Chamar a função de clusterização
+            #df = clusterizar_clientes(df)  # Chamar a função de clusterização
+            clusterizar_clientes(df)  # Chamar a função de clusterização
         else:
             st.warning("⚠️ Dados incompletos! A planilha deve conter: 'idade', 'frequencia_compra' e 'gasto_medio'.")
 
