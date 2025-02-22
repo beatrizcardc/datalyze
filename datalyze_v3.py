@@ -156,6 +156,15 @@ def previsao_vendas_avancada(df):
 
     except Exception as e:
         st.error(f"Erro no modelo: {str(e)}")
+
+# Criar um heatmap de correlação das variáveis com as vendas
+    st.write("### 🔍 Influência das Variáveis sobre as Vendas")
+    correlacao = df[['vendas', 'dia_semana', 'horario', 'temperatura', 'produto']].corr()
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.heatmap(correlacao, annot=True, cmap="coolwarm", center=0, ax=ax)
+    st.pyplot(fig)
+
         
 #Novo Heatmap
     st.write("## 🔥 Mapa de Calor - Padrão Completo de Vendas")
