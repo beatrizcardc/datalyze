@@ -73,7 +73,7 @@ def previsao_vendas_avancada(df):
     variaveis_selecionadas = st.sidebar.multiselect(
         "Selecione fatores de influência:",
         options=variaveis_disponiveis,
-        default=['dia_semana']
+        default=['horario']
     )
 
  # Interface principal
@@ -157,13 +157,24 @@ def previsao_vendas_avancada(df):
     except Exception as e:
         st.error(f"Erro no modelo: {str(e)}")
 
-# Criar um heatmap de correlação das variáveis com as vendas
+# 🔍 Análise de correlação das variáveis com as vendas
     st.write("### 🔍 Influência das Variáveis sobre as Vendas")
-    correlacao = df[['vendas', 'dia_semana', 'horario', 'temperatura', 'produto']].corr()
-
+    
+    # Converter 'dia_semana' e 'produto' para valores numéricos
+    df['dia_semana'] = pd.to_numeric(df['dia_semana'], errors='coerce')
+    df['produto'] = pd.to_numeric(df['produto'], errors='coerce')
+    
+    # Selecionar apenas colunas numéricas para a análise de correlação
+    df_corr = df[['vendas', 'dia_semana', 'horario', 'temperatura', 'produto']].dropna()
+    
+    # Criar matriz de correlação
+    correlacao = df_corr.corr()
+    
+    # Criar o gráfico de correlação
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.heatmap(correlacao, annot=True, cmap="coolwarm", center=0, ax=ax)
     st.pyplot(fig)
+
 
         
 #Novo Heatmap
