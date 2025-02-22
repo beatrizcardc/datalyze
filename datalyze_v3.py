@@ -325,6 +325,87 @@ if df is not None:
         else:
             st.warning("⚠️ Dados incompletos! Necessário colunas 'data' e 'vendas'.")
 
+    elif analise_selecionada == "Clusterização de Clientes":
+        if {'idade', 'frequencia_compra', 'gasto_medio'}.issubset(df.columns):
+            df = clusterizar_clientes(df)  # Chamar a função de clusterização
+        else:
+            st.warning("⚠️ Dados incompletos! A planilha deve conter: 'idade', 'frequencia_compra' e 'gasto_medio'.")
+
+    elif analise_selecionada == "Testes":
+        st.write("### 📉 Análise Estatística Comparativa")
+        
+        if {'grupo', 'vendas'}.issubset(df.columns):
+            try:
+                # Preparação dos dados
+                grupos = df.groupby('grupo')['vendas'].apply(list)
+                num_grupos = len(grupos)
+                
+                if num_grupos < 2:
+                    st.warning("""
+                    ⚠️ **Dados insuficientes!**
+                    Necessário pelo menos 2 grupos para comparação.
+                    """)
+                else:
+                    # Execução dos testes
+                    if num_grupos == 2:
+                        teste_nome = "Teste T Student"
+                        estatistica, p_valor = ttest_ind(grupos[0], grupos[1])
+                        explicacao = """
+                        **Comparação entre 2 grupos:**  
+                        - Verifica se há diferença significativa entre dois grupos
+                        - p-valor < 0.05 → Diferença estatisticamente significativa
+                        - p-valor ≥ 0.05 → Não há evidência de diferença
+                        """
+                    else:
+                        teste_nome = "ANOVA"
+                        estatistica, p_valor = f_oneway(*grupos)
+                        explicacao = """
+                        **Comparação entre múltiplos grupos:**  
+                        - Verifica se pelo menos um grupo difere dos demais
+                        - p-valor < 0.05 → Existe diferença significativa
+                        - p-valor ≥ 0.05 → Grupos são estatisticamente similares
+                        """
+
+                    # Apresentação dos resultados
+                    col1, col2 = st.columns([1, 2])
+                    
+                    with col1:
+                        st.metric(
+                            label=f"**Resultado do {teste_nome}**",
+                            value=f"p-valor = {p_valor:.4f}",
+                            help="Probabilidade de que as diferenças observadas sejam por acaso"
+                        )
+                        
+                    with col2:
+                        st.markdown("""
+                        ### 📌 Guia de Interpretação
+                        """)
+                        st.markdown(explicacao)
+                        
+                    # Conclusão final
+                    if p_valor < 0.05:
+                        st.success("""
+                        🧪 **Conclusão:** Diferença estatisticamente significativa encontrada!
+                        """)
+                    else:
+                        st.info("""
+                        🔍 **Conclusão:** Não foi detectada diferença significativa.
+                        """)
+
+            except Exception as e:
+                st.error(f"""
+                ⚠️ **Erro na análise:**  
+                {str(e)}  
+                Verifique os dados e tente novamente
+                """)
+        else:
+            st.warning("""
+            ⚠️ **Dados incompletos!**  
+            Para esta análise seu arquivo precisa conter:  
+            - Coluna **'grupo'**: Identificação dos grupos (Ex: A, B, Controle)  
+            - Coluna **'vendas'**: Valores numéricos para comparação  
+            """)
+
 # Botão de limpeza de dados
 st.sidebar.button("🗑️ Limpar Dados", on_click=lambda: st.session_state.pop('df', None))
 
