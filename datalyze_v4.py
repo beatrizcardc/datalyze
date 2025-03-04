@@ -129,3 +129,4 @@ if df_vendas is not None and df_clientes is not None:
 
 
 
+
