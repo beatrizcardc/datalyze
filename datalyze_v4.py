@@ -55,7 +55,13 @@ def previsao_vendas(df):
     df['temperatura'] = pd.to_numeric(df['temperatura'], errors='coerce')
     
     model = LinearRegression()
+    if df[variavel_selecionada].dtype == 'object':
+    encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+    X_encoded = encoder.fit_transform(df[[variavel_selecionada]])
+    X = pd.DataFrame(X_encoded, columns=encoder.get_feature_names_out([variavel_selecionada]))
+    else:
     X = df[[variavel_selecionada]]
+
     y = df['vendas']
     model.fit(X, y)
     df['previsao'] = model.predict(X)
