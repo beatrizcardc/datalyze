@@ -1,11 +1,11 @@
-# Versão Final v4 - Datalyze Integrado sem Planilha de Testes
 import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
-from scipy.stats import ttest_ind, f_oneway
+from sklearn.preprocessing import OneHotEncoder
+from datetime import timedelta
 
 # Configuração da página
 st.set_page_config(page_title="Datalyze - Análise Inteligente de Negócios", layout="wide")
@@ -14,124 +14,118 @@ st.set_page_config(page_title="Datalyze - Análise Inteligente de Negócios", la
 st.title("📊 Datalyze - Análise Inteligente de Negócios")
 st.write("Bem-vindo! Aqui você pode carregar seus dados e aplicar técnicas de análise para obter insights valiosos.")
 
-# Função para carregar os dados
+# Função para carregar dados
 def carregar_dados():
-    uploaded_file = st.sidebar.file_uploader("Carregar arquivo CSV/XLS", type=["csv", "xls", "xlsx"])
+    uploaded_file = st.sidebar.file_uploader("Carregar arquivo XLSX", type=["xlsx"])
+    
     if uploaded_file is not None:
         try:
-            if uploaded_file.name.endswith(".csv"):
-                df = pd.read_csv(uploaded_file)
-            else:
-                df = pd.read_excel(uploaded_file, sheet_name="Vendas")  # Carregar apenas a aba "Vendas"
+            xls = pd.ExcelFile(uploaded_file)
+            planilhas = xls.sheet_names
             
-            df['Data'] = pd.to_datetime(df['Data'])  # Garantir que a coluna Data seja datetime
-            return df
+            if "Vendas" in planilhas and "Clientes" in planilhas:
+                df_vendas = pd.read_excel(xls, sheet_name="Vendas")
+                df_clientes = pd.read_excel(xls, sheet_name="Clientes")
+                return df_vendas, df_clientes
+            else:
+                st.error("Erro: O arquivo deve conter as abas 'Vendas' e 'Clientes'.")
+                return None, None
         except Exception as e:
             st.error(f"Erro ao carregar arquivo: {str(e)}")
-            return None
-    return None
+            return None, None
+    return None, None
 
-# Função para análise estatística e previsão de vendas
-def analise_estatistica(df):
-    st.header("📊 Estatísticas de Vendas")
+# Carregar os dados
+df_vendas, df_clientes = carregar_dados()
 
-    # Criando categorias para segmentação
-    df['Categoria'] = df['Produto'].apply(lambda x: 'Categoria 1' if 'esp' in x.lower() else 'Categoria 2')
+if df_vendas is not None and df_clientes is not None:
+    # Exibir dados carregados
+    st.write("### 📋 Dados de Vendas")
+    st.dataframe(df_vendas.head())
+    
+    st.write("### 📋 Dados de Clientes")
+    st.dataframe(df_clientes.head())
+    
+    # Processamento das datas
+    df_vendas['data'] = pd.to_datetime(df_vendas['data'])
+    df_vendas['dia_semana'] = df_vendas['data'].dt.dayofweek + 1  # 1 = Segunda-feira, 7 = Domingo
 
-    # Média e Variância por Categoria
-    media_por_categoria = df.groupby('Categoria')['Vendas'].mean()
-    variancia_por_categoria = df.groupby('Categoria')['Vendas'].var()
-
-    # Média e Variância por Dia da Semana
-    df['DiaSemana'] = df['Data'].dt.day_name()
-    media_por_dia = df.groupby('DiaSemana')['Vendas'].mean()
-    variancia_por_dia = df.groupby('DiaSemana')['Vendas'].var()
-
-    # Exibição dos dados no Streamlit
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write("### 🏷️ Média e Variância por Categoria")
-        st.dataframe(pd.DataFrame({'Média': media_por_categoria, 'Variância': variancia_por_categoria}))
-
-    with col2:
-        st.write("### 📅 Média e Variância por Dia da Semana")
-        st.dataframe(pd.DataFrame({'Média': media_por_dia, 'Variância': variancia_por_dia}))
-
-    # Teste T para Categoria 1 x Categoria 2
-    vendas_um = df[df['Categoria'] == 'Categoria 1']['Vendas']
-    vendas_dois = df[df['Categoria'] == 'Categoria 2']['Vendas']
-    t_stat, p_valor = ttest_ind(vendas_esp, vendas_acougue, equal_var=False)
-
-    # ANOVA para comparar os dias da semana
-    grupos_vendas = [df[df['DiaSemana'] == dia]['Vendas'] for dia in df['DiaSemana'].unique()]
-    anova_stat, anova_p_valor = f_oneway(*grupos_vendas)
-
-    st.write("### 🔬 Testes Estatísticos")
-    st.metric(label="p-valor do Teste T (Categoria 1 vs Categoria 2)", value=f"{p_valor:.4f}")
-    st.metric(label="p-valor da ANOVA (Diferença entre Dias da Semana)", value=f"{anova_p_valor:.4f}")
-
-    # Explicação para o usuário leigo
-    st.write("🔍 **O que isso significa?**")
-    if p_valor < 0.05:
-        st.success("📌 Existe uma diferença significativa nas vendas entre Espetinhos e Açougue.")
-    else:
-        st.info("📌 Não foi encontrada diferença significativa entre Espetinhos e Açougue.")
-
-    if anova_p_valor < 0.05:
-        st.success("📌 Existe uma variação significativa nas vendas entre os dias da semana.")
-    else:
-        st.info("📌 Os dias da semana não apresentam grandes diferenças de vendas.")
-
-# Função para previsão de vendas usando Regressão Linear
-def previsao_vendas(df):
-    st.header("📈 Previsão de Vendas")
-
-    # Transformando os dados
-    df['DiaSemana_Num'] = df['Data'].dt.weekday  # Segunda=0, Domingo=6
-    df['Temperatura'] = np.random.randint(27, 39, size=len(df))  # Simulação de temperatura
-
-    # Seleção de features para modelo preditivo
-    X = df[['DiaSemana_Num', 'Temperatura']]
-    y = df['Vendas']
-
-    # Treinando o modelo
+    # Criar modelo de previsão de vendas
+    st.write("### 📈 Previsão de Vendas")
+    
+    # Definir variáveis para previsão
+    variaveis = ['dia_semana', 'horario', 'temperatura']
+    df_vendas = df_vendas.dropna(subset=['vendas'])
+    
+    encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+    encoded_vars = encoder.fit_transform(df_vendas[['dia_semana', 'horario']])
+    cols = encoder.get_feature_names_out(['dia_semana', 'horario'])
+    df_encoded = pd.DataFrame(encoded_vars, columns=cols)
+    df_vendas = pd.concat([df_vendas, df_encoded], axis=1)
+    
     model = LinearRegression()
+    X = df_vendas[cols]
+    y = df_vendas['vendas']
     model.fit(X, y)
-
-    # Criando datas futuras
-    dias_futuros = pd.date_range(df['Data'].max() + pd.Timedelta(days=1), periods=7)
-    df_futuro = pd.DataFrame({'Data': dias_futuros})
-    df_futuro['DiaSemana_Num'] = df_futuro['Data'].dt.weekday
-    df_futuro['Temperatura'] = np.random.randint(27, 39, size=len(df_futuro))
-
-    # Fazendo previsões
-    df_futuro['Previsao'] = model.predict(df_futuro[['DiaSemana_Num', 'Temperatura']])
-
-    # Exibindo gráfico de tendência
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.plot(df['Data'], df['Vendas'], label="Vendas Passadas", marker='o')
-    ax.plot(df_futuro['Data'], df_futuro['Previsao'], label="Previsão de Vendas", linestyle='--', marker='s', color='red')
+    df_vendas['previsao'] = model.predict(X)
+    
+    # Gráfico de tendências de vendas
+    fig, ax = plt.subplots(figsize=(12, 6))
+    df_vendas = df_vendas.sort_values('data')
+    ax.plot(df_vendas['data'], df_vendas['vendas'], label='Vendas Reais', marker='o')
+    ax.plot(df_vendas['data'], df_vendas['previsao'], linestyle='--', color='red', label='Previsão', marker='s')
     ax.set_xlabel("Data")
     ax.set_ylabel("Vendas")
     ax.legend()
-    ax.grid(True, linestyle="--", alpha=0.5)
+    ax.grid(True, alpha=0.3)
     st.pyplot(fig)
+    
+    st.write("### 🔍 Explicação da Previsão")
+    st.markdown("""
+    - O gráfico acima mostra a **tendência de vendas reais e as previsões geradas pelo modelo**.
+    - Se a previsão acompanha os dados reais, o modelo está funcionando bem.
+    - **Atenção**: Se houver grande discrepância, pode indicar eventos atípicos, como promoções ou sazonalidade.
+    
+    **Como usar essa previsão no seu negócio?**
+    - Planejar estoque e produção conforme os períodos de alta demanda.
+    - Ajustar promoções para aumentar vendas em dias de baixa previsão.
+    - Melhorar estratégias de precificação para otimizar o faturamento.
+    """)
+    
+    # Exibir coeficientes do modelo
+    st.write("### 🔍 Influência das Variáveis")
+    coeficientes = pd.DataFrame({'Variável': cols, 'Impacto': model.coef_}).sort_values('Impacto', ascending=False)
+    st.dataframe(coeficientes.style.bar(color='#5fba7d', subset=['Impacto']))
+    
+    # Análise de Clusterização de Clientes
+    st.write("### 🧩 Clusterização de Clientes")
+    if {'idade', 'frequencia_compra', 'gasto_medio'}.issubset(df_clientes.columns):
+        from sklearn.cluster import KMeans
+        kmeans = KMeans(n_clusters=3, random_state=42)
+        df_clientes['cluster'] = kmeans.fit_predict(df_clientes[['idade', 'frequencia_compra', 'gasto_medio']])
+        
+        fig, ax = plt.subplots(figsize=(10, 6))
+        cores = ['#FF6B6B', '#4ECDC4', '#45B7D1']
+        for cluster in sorted(df_clientes['cluster'].unique()):
+            dados_cluster = df_clientes[df_clientes['cluster'] == cluster]
+            ax.scatter(dados_cluster['idade'], dados_cluster['gasto_medio'], s=100, c=cores[cluster], label=f'Grupo {cluster + 1}', alpha=0.7)
+        
+        ax.set_xlabel("Idade")
+        ax.set_ylabel("Gasto Médio (R$)")
+        ax.legend(title="Grupos de Clientes")
+        ax.grid(True, linestyle='--', alpha=0.3)
+        st.pyplot(fig)
+        
+        st.markdown("""
+        **Como interpretar?**
+        - Clientes foram agrupados com base em idade, frequência de compras e gasto médio.
+        - Isso ajuda a **identificar perfis de clientes** e criar estratégias direcionadas.
+        
+        **Exemplo de Estratégias:**
+        - **Grupo 1:** Clientes jovens e frequentes → Promoções e descontos.
+        - **Grupo 2:** Adultos de renda média → Programas de fidelidade.
+        - **Grupo 3:** Clientes premium → Produtos exclusivos e atendimento especial.
+        """)
 
-    # Explicação para o usuário
-    st.write("🔍 **O que isso significa?**")
-    st.write("Este gráfico exibe as **vendas passadas** e uma **previsão para os próximos 7 dias**.")
-    st.write("Os valores futuros são estimados com base em padrões históricos e temperatura.")
-
-# Interface principal
-df = carregar_dados()
-
-if df is not None:
-    st.write("### 📋 Dados Carregados")
-    st.dataframe(df.head())
-
-    analise_estatistica(df)
-    previsao_vendas(df)
-else:
-    st.warning("⚠️ Carregue um arquivo para começar.")
 
 
