@@ -158,40 +158,22 @@ def previsao_vendas_avancada(df):
         st.error(f"Erro no modelo: {str(e)}")
 
    
-#Novo Heatmap
-    st.write("## 🔥 Mapa de Calor - Padrão Completo de Vendas")
-    
-    if {'horario', 'dia_semana', 'produto', 'temperatura', 'vendas'}.issubset(df.columns):
-        
-        # Criar uma tabela pivot com a média de vendas por combinação de horário, dia da semana e temperatura
-        df_pivot = df.groupby(['dia_semana', 'horario']).agg({'vendas': 'sum', 'temperatura': 'mean', 'produto': 'count'}).reset_index()
-    
-        fig, ax = plt.subplots(figsize=(12, 8))
-        
-        scatter = sns.scatterplot(
-            data=df_pivot, 
-            x="dia_semana", 
-            y="horario", 
-            size="produto", # Tamanho representa a quantidade de produtos vendidos
-            hue="temperatura", # Cor representa a temperatura
-            palette="coolwarm", 
-            sizes=(20, 500), # Define o tamanho dos pontos no gráfico
-            edgecolor="black", 
-            ax=ax
-        )
-    
-        ax.set_title("📊 Mapa de Calor de Vendas por Dia da Semana e Horário")
-        ax.set_xlabel("Dia da Semana")
-        ax.set_ylabel("Horário")
-        ax.grid(True, linestyle="--", alpha=0.5)
-    
-        # Criar uma legenda personalizada para representar a quantidade de vendas
-        handles, labels = scatter.get_legend_handles_labels()
-        labels[0] = "Quantidade de Produtos Vendidos"
-        labels[len(labels)//2] = "Temperatura Média"
-        ax.legend(handles, labels, title="Legendas", loc="upper right", fontsize="small")
-    
-        st.pyplot(fig)
+# Novo Mapa de Correlação
+st.write("## 🔥 Mapa de Correlação entre Variáveis")
+
+# Filtrar apenas colunas numéricas para correlação
+df_corr = df.select_dtypes(include=[np.number])
+
+# Gerar a matriz de correlação
+correlacao = df_corr.corr()
+
+# Criar o heatmap
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.heatmap(correlacao, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5, ax=ax)
+
+ax.set_title("🔗 Correlação entre as Variáveis do Dataset")
+st.pyplot(fig)
+
 
 # 🔹 Função de Testes Estatísticos
 def executar_testes_estatisticos(df):
