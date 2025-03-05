@@ -154,7 +154,7 @@ def previsao_vendas_avancada(df):
             - **Valores negativos**: Quando essa variável aumenta, as vendas tendem a diminuir.
             - **Quanto maior o valor absoluto**, maior a influência dessa variável nas vendas.
 
-            Exemplo: Se um horário tem um impacto >1.0, significa que tem uma forte influência positiva sobre as vendas.
+            Ex: Se um horário tem um impacto >1.0, significa que tem uma forte influência positiva sobre as vendas.
                 """)
         
         coeficientes = pd.DataFrame({
