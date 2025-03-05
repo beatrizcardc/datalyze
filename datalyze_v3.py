@@ -195,6 +195,39 @@ def previsao_vendas_avancada(df):
     
         st.pyplot(fig)
 
+# 🔹 Função de Testes Estatísticos
+def executar_testes_estatisticos(df):
+    st.write("### 📉 Análise Estatística Comparativa")
+
+    if 'grupo' in df.columns and 'vendas' in df.columns:
+        try:
+            grupos = df.groupby('grupo')['vendas'].apply(list)
+            num_grupos = len(grupos)
+
+            if num_grupos < 2:
+                st.warning("⚠️ Dados insuficientes! Necessário pelo menos 2 grupos para comparação.")
+                return
+
+            if num_grupos == 2:
+                teste_nome = "Teste T Student"
+                estatistica, p_valor = ttest_ind(grupos.values[0], grupos.values[1], equal_var=False)
+            else:
+                teste_nome = "ANOVA"
+                estatistica, p_valor = f_oneway(*grupos.values)
+
+            st.metric(label=f"**Resultado do {teste_nome}**", value=f"p-valor = {p_valor:.4f}")
+
+            if p_valor < 0.05:
+                st.success("🧪 Diferença estatisticamente significativa encontrada!")
+            else:
+                st.info("🔍 Não foi detectada diferença significativa.")
+
+        except Exception as e:
+            st.error(f"⚠️ Erro na análise: {str(e)}")
+    else:
+        st.warning("⚠️ Dados insuficientes! A planilha deve conter 'grupo' e 'vendas'.")
+
+#Função de Clusterização
 def clusterizar_clientes(df):  # ✅ Agora está no escopo global
     try:
         # Verificação das colunas necessárias
