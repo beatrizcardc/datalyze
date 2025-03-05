@@ -76,8 +76,6 @@ def previsao_vendas_avancada(df):
         default=['horario']
     )
 
-   
-
  # Interface principal
 
     # Verificação para evitar erro caso o usuário não selecione nada
@@ -287,26 +285,24 @@ def clusterizar_clientes(df):  # ✅ Agora está no escopo global
             'Gasto Médio (R$)', 'Variação Gasto'
         ]
 
-        col1, col2 = st.columns([1, 2])
+        #col1, col2 = st.columns([1, 2])
         
-        with col1:
-            st.write("#### 📊 Estatísticas Básicas")
-            st.dataframe(
-                resumo.style.format({
-                    'Idade Média': '{:.1f} anos',
-                    'Variação Idade': '± {:.1f}',
-                    'Frequência Média': '{:.1f}/mês',
-                    'Variação Frequência': '± {:.1f}',
-                    'Gasto Médio (R$)': 'R$ {:.2f}',
-                    'Variação Gasto': '± R$ {:.2f}'
-                })
+        st.write("#### 📊 Estatísticas Básicas")
+        st.dataframe(
+             resumo.style.format({
+                'Idade Média': '{:.1f} anos',
+                'Variação Idade': '± {:.1f}',
+                'Frequência Média': '{:.1f}/mês',
+                'Variação Frequência': '± {:.1f}',
+                'Gasto Médio (R$)': 'R$ {:.2f}',
+                'Variação Gasto': '± R$ {:.2f}'
+            })
             )
         # Adiciona um espaço para separar visualmente
         st.write("")  # OU use st.markdown("---") para uma linha horizontal
 
-        with col2:
-            st.write("#### 📌 Guia de Interpretação")
-            st.markdown("""
+        st.write("#### 📌 Guia de Interpretação")
+        st.markdown("""
             **Grupo 1 (Vermelho)**  
             👥 **Perfil:** Clientes mais jovens  
             💸 **Comportamento:**  
