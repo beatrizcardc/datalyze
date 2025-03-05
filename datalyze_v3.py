@@ -301,7 +301,7 @@ def clusterizar_clientes(df):  # ✅ Agora está no escopo global
                     'Variação Gasto': '± R$ {:.2f}'
                 })
             )
-
+        st.markdown("---")
         with col2:
             st.write("#### 📌 Guia de Interpretação")
             st.markdown("""
