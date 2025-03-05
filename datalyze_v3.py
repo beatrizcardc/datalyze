@@ -329,7 +329,7 @@ if df is not None:
             st.warning("⚠️ Dados incompletos! A planilha deve conter: 'idade', 'frequencia_compra' e 'gasto_medio'.")
    
     elif analise_selecionada == "Testes":
-    executar_testes_estatisticos(df)
+        executar_testes_estatisticos(df)
 
 def executar_testes_estatisticos(df):
     st.write("### 📉 Análise Estatística Comparativa")
