@@ -150,11 +150,11 @@ def previsao_vendas_avancada(df):
         st.markdown("""
         Os coeficientes abaixo indicam o impacto das variáveis no modelo preditivo de vendas:
 
-            - **Valores positivos**: Quando essa variável aumenta, as vendas tendem a **aumentar**.
-            - **Valores negativos**: Quando essa variável aumenta, as vendas tendem a **diminuir**.
+            - **Valores positivos**: Quando essa variável aumenta, as vendas tendem a aumentar.
+            - **Valores negativos**: Quando essa variável aumenta, as vendas tendem a diminuir.
             - **Quanto maior o valor absoluto**, maior a influência dessa variável nas vendas.
 
-            Exemplo: Se um determinado horário tem um impacto >1.0, significa que tem uma forte influência positiva sobre as vendas.
+            Exemplo: Se um horário tem um impacto >1.0, significa que tem uma forte influência positiva sobre as vendas.
                 """)
         
         coeficientes = pd.DataFrame({
