@@ -323,7 +323,7 @@ if df is not None:
     correlacao = df_corr.corr()
     
     # Criar o heatmap
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(8, 4))
     sns.heatmap(correlacao, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5, ax=ax)
     
     ax.set_title("🔗 Correlação entre as Variáveis do Dataset")
