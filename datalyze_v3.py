@@ -158,23 +158,6 @@ def previsao_vendas_avancada(df):
         st.error(f"Erro no modelo: {str(e)}")
 
    
-# Novo Mapa de Correlação
-st.write("## 🔥 Mapa de Correlação entre Variáveis")
-
-# Filtrar apenas colunas numéricas para correlação
-df_corr = df.select_dtypes(include=[np.number])
-
-# Gerar a matriz de correlação
-correlacao = df_corr.corr()
-
-# Criar o heatmap
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.heatmap(correlacao, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5, ax=ax)
-
-ax.set_title("🔗 Correlação entre as Variáveis do Dataset")
-st.pyplot(fig)
-
-
 # 🔹 Função de Testes Estatísticos
 def executar_testes_estatisticos(df):
     st.write("### 📉 Análise Estatística Comparativa")
@@ -329,6 +312,22 @@ df = carregar_dados(analise_selecionada)
 if df is not None:
     st.write("### 📋 Dados Carregados")
     st.dataframe(df.head().style.format({"data": lambda t: t.strftime("%d/%m/%Y")}))
+
+    # Novo Mapa de Correlação
+st.write("## 🔥 Mapa de Correlação entre Variáveis")
+
+# Filtrar apenas colunas numéricas para correlação
+df_corr = df.select_dtypes(include=[np.number])
+
+# Gerar a matriz de correlação
+correlacao = df_corr.corr()
+
+# Criar o heatmap
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.heatmap(correlacao, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5, ax=ax)
+
+ax.set_title("🔗 Correlação entre as Variáveis do Dataset")
+st.pyplot(fig)
 
     if analise_selecionada == "Previsão de Vendas":
         if {'data', 'vendas'}.issubset(df.columns):
