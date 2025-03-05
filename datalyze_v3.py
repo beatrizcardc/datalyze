@@ -117,13 +117,13 @@ def previsao_vendas_avancada(df):
         st.write("### 📈 Modelo Preditivo Multivariado")
 
        # Mapeamento de números para os dias da semana
-        dias_semana_mapeamento = {
-            1: "Domingo", 2: "Segunda", 3: "Terça", 4: "Quarta", 
-            5: "Quinta", 6: "Sexta", 7: "Sábado"
-        }
+        #dias_semana_mapeamento = {
+            #1: "Domingo", 2: "Segunda", 3: "Terça", 4: "Quarta", 
+            #5: "Quinta", 6: "Sexta", 7: "Sábado"
+       # }
         
         # Converter números para os nomes correspondentes
-        df['dia_semana'] = df['dia_semana'].map(dias_semana_mapeamento)
+        #df['dia_semana'] = df['dia_semana'].map(dias_semana_mapeamento)
         
         # Garantir que a ordem dos dias fique correta no gráfico
         dias_semana_ordem = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
