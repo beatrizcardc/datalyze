@@ -135,7 +135,7 @@ def previsao_vendas_avancada(df):
         ---
         
         📍 **Exemplo prático:**  
-        Na sexta-feira, houve um pico de vendas reais que o modelo **não previu corretamente**, indicando que algum fator importante pode não ter sido considerado na previsão.  
+        Se houve um pico de vendas reais que o modelo **não previu corretamente**, indicando que algum fator importante pode não ter sido considerado na previsão.  
         
         💡 Isso pode significar que há variáveis ocultas influenciando as vendas, como promoções, eventos especiais ou fatores externos.
         """)
