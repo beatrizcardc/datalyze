@@ -147,6 +147,16 @@ def previsao_vendas_avancada(df):
 
         # Exibição dos coeficientes
         st.write("### 🔍 Influência dos Fatores")
+        st.markdown("""
+        Os coeficientes abaixo indicam o impacto das variáveis no modelo preditivo de vendas:
+
+            - **Valores positivos**: Quando essa variável aumenta, as vendas tendem a **aumentar**.
+            - **Valores negativos**: Quando essa variável aumenta, as vendas tendem a **diminuir**.
+            - **Quanto maior o valor absoluto**, maior a influência dessa variável nas vendas.
+
+            Exemplo: Se "horario_20" tem um impacto de **1.32**, significa que esse horário tem uma forte influência positiva sobre as vendas.
+                """)
+        
         coeficientes = pd.DataFrame({
             'Variável': features,
             'Impacto': model.coef_
@@ -337,7 +347,6 @@ if df is not None:
 
     elif analise_selecionada == "Clusterização de Clientes":
         if {'idade', 'frequencia_compra', 'gasto_medio'}.issubset(df.columns):
-            #df = clusterizar_clientes(df)  # Chamar a função de clusterização
             clusterizar_clientes(df)  # Chamar a função de clusterização
         else:
             st.warning("⚠️ Dados incompletos! A planilha deve conter: 'idade', 'frequencia_compra' e 'gasto_medio'.")
