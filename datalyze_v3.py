@@ -199,13 +199,13 @@ def previsao_vendas_avancada(df):
 def executar_testes_estatisticos(df):
     st.write("### 📉 Análise Estatística Comparativa")
 
-    if 'grupo' in df.columns and 'vendas' in df.columns:
+    if 'categoria_produto' in df.columns and 'vendas' in df.columns:
         try:
-            grupos = df.groupby('grupo')['vendas'].apply(list)
+            grupos = df.groupby('categoria_produto')['vendas'].apply(list)
             num_grupos = len(grupos)
 
             if num_grupos < 2:
-                st.warning("⚠️ Dados insuficientes! Necessário pelo menos 2 grupos para comparação.")
+                st.warning("⚠️ Dados insuficientes! Necessário pelo menos 2 categoria_produto para comparação.")
                 return
 
             if num_grupos == 2:
@@ -225,7 +225,7 @@ def executar_testes_estatisticos(df):
         except Exception as e:
             st.error(f"⚠️ Erro na análise: {str(e)}")
     else:
-        st.warning("⚠️ Dados insuficientes! A planilha deve conter 'grupo' e 'vendas'.")
+        st.warning("⚠️ Dados insuficientes! A planilha deve conter 'categoria_produto' e 'vendas'.")
 
 #Função de Clusterização
 def clusterizar_clientes(df):  # ✅ Agora está no escopo global
