@@ -218,9 +218,9 @@ def executar_testes_estatisticos(df):
             st.metric(label=f"**Resultado do {teste_nome}**", value=f"p-valor = {p_valor:.4f}")
 
             if p_valor < 0.05:
-                st.success("🧪 Diferença estatisticamente significativa encontrada!")
+                st.success("🧪 Diferença estatisticamente significativa encontrada! Há indícios de que suas ações foram um sucesso!")
             else:
-                st.info("🔍 Não foi detectada diferença significativa.")
+                st.info("🔍 Não foi detectada diferença significativa. Tente novas ações como promoções, disparo de e-mails, cashback e volte a comparar.")
 
         except Exception as e:
             st.error(f"⚠️ Erro na análise: {str(e)}")
