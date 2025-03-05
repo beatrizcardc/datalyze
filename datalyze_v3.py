@@ -301,7 +301,9 @@ def clusterizar_clientes(df):  # ✅ Agora está no escopo global
                     'Variação Gasto': '± R$ {:.2f}'
                 })
             )
-        st.markdown("---")
+        # Adiciona um espaço para separar visualmente
+        st.write("")  # OU use st.markdown("---") para uma linha horizontal
+
         with col2:
             st.write("#### 📌 Guia de Interpretação")
             st.markdown("""
