@@ -115,7 +115,30 @@ def previsao_vendas_avancada(df):
 
         # Visualização
         st.write("### 📈 Modelo Preditivo Multivariado")
-
+        st.markdown("""
+        Este gráfico mostra a **comparação entre as vendas reais e as previsões do modelo** ao longo dos dias da semana.
+        
+        ---
+        
+        📌 **O que cada linha representa?**
+        
+        - 🔵 **Linha Azul (Vendas Reais)**: Representa as vendas observadas na realidade.  
+        - 🔴 **Linha Vermelha (Previsão)**: Representa as vendas estimadas pelo modelo preditivo.  
+        
+        ---
+        
+        📊 **Como interpretar o gráfico?**
+        
+        - Se as duas linhas estiverem próximas, significa que o modelo conseguiu prever bem as vendas.  
+        - ⚠️ Se houver uma grande diferença entre as linhas, o modelo pode precisar de ajustes ou mais dados para melhorar a precisão.  
+        
+        ---
+        
+        📍 **Exemplo prático:**  
+        Na sexta-feira, houve um pico de vendas reais que o modelo **não previu corretamente**, indicando que algum fator importante pode não ter sido considerado na previsão.  
+        
+        💡 Isso pode significar que há variáveis ocultas influenciando as vendas, como promoções, eventos especiais ou fatores externos.
+        """)
        # Mapeamento de números para os dias da semana
         #dias_semana_mapeamento = {
             #1: "Domingo", 2: "Segunda", 3: "Terça", 4: "Quarta", 
