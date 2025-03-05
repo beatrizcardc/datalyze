@@ -331,10 +331,10 @@ if df is not None:
     elif analise_selecionada == "Testes":
         executar_testes_estatisticos(df)
 
+# 🔹 Função de Testes Estatísticos (Corrigida)
 def executar_testes_estatisticos(df):
     st.write("### 📉 Análise Estatística Comparativa")
 
-    # Certificar-se de que temos dados suficientes para o teste
     if 'grupo' in df.columns and 'vendas' in df.columns:
         try:
             grupos = df.groupby('grupo')['vendas'].apply(list)
@@ -347,21 +347,21 @@ def executar_testes_estatisticos(df):
             # Escolha do teste estatístico adequado
             if num_grupos == 2:
                 teste_nome = "Teste T Student"
-                estatistica, p_valor = ttest_ind(grupos.iloc[0], grupos.iloc[1])
+                estatistica, p_valor = ttest_ind(grupos.values[0], grupos.values[1], equal_var=False)
                 explicacao = """
                 **Comparação entre 2 grupos:**  
-                - Verifica se há diferença significativa entre dois grupos
-                - p-valor < 0.05 → Diferença estatisticamente significativa
-                - p-valor ≥ 0.05 → Não há evidência de diferença
+                - Verifica se há diferença significativa entre dois grupos  
+                - p-valor < 0.05 → Diferença estatisticamente significativa  
+                - p-valor ≥ 0.05 → Não há evidência de diferença  
                 """
             else:
                 teste_nome = "ANOVA"
-                estatistica, p_valor = f_oneway(*grupos)
+                estatistica, p_valor = f_oneway(*grupos.values)
                 explicacao = """
                 **Comparação entre múltiplos grupos:**  
-                - Verifica se pelo menos um grupo difere dos demais
-                - p-valor < 0.05 → Existe diferença significativa
-                - p-valor ≥ 0.05 → Grupos são estatisticamente similares
+                - Verifica se pelo menos um grupo difere dos demais  
+                - p-valor < 0.05 → Existe diferença significativa  
+                - p-valor ≥ 0.05 → Grupos são estatisticamente similares  
                 """
 
             # Exibição dos resultados
@@ -386,7 +386,6 @@ def executar_testes_estatisticos(df):
             st.error(f"⚠️ **Erro na análise:** {str(e)}")
     else:
         st.warning("⚠️ **Dados incompletos!** É necessário que a planilha contenha colunas 'grupo' e 'vendas'.")
-
 
 
 # Botão de limpeza de dados
