@@ -76,61 +76,7 @@ def previsao_vendas_avancada(df):
         default=['horario']
     )
 
-    # 🔹 Função de Testes Estatísticos (Definição antes da chamada)
-def executar_testes_estatisticos(df):
-    st.write("### 📉 Análise Estatística Comparativa")
-
-    if 'grupo' in df.columns and 'vendas' in df.columns:
-        try:
-            grupos = df.groupby('grupo')['vendas'].apply(list)
-            num_grupos = len(grupos)
-
-            if num_grupos < 2:
-                st.warning("⚠️ **Dados insuficientes!** Necessário pelo menos 2 grupos para comparação.")
-                return
-
-            # Escolha do teste estatístico adequado
-            if num_grupos == 2:
-                teste_nome = "Teste T Student"
-                estatistica, p_valor = ttest_ind(grupos.values[0], grupos.values[1], equal_var=False)
-                explicacao = """
-                **Comparação entre 2 grupos:**  
-                - Verifica se há diferença significativa entre dois grupos  
-                - p-valor < 0.05 → Diferença estatisticamente significativa  
-                - p-valor ≥ 0.05 → Não há evidência de diferença  
-                """
-            else:
-                teste_nome = "ANOVA"
-                estatistica, p_valor = f_oneway(*grupos.values)
-                explicacao = """
-                **Comparação entre múltiplos grupos:**  
-                - Verifica se pelo menos um grupo difere dos demais  
-                - p-valor < 0.05 → Existe diferença significativa  
-                - p-valor ≥ 0.05 → Grupos são estatisticamente similares  
-                """
-
-            # Exibição dos resultados
-            col1, col2 = st.columns([1, 2])
-            with col1:
-                st.metric(
-                    label=f"**Resultado do {teste_nome}**",
-                    value=f"p-valor = {p_valor:.4f}",
-                    help="Probabilidade de que as diferenças observadas sejam por acaso"
-                )
-            with col2:
-                st.markdown("### 📌 Guia de Interpretação")
-                st.markdown(explicacao)
-
-            # Conclusão
-            if p_valor < 0.05:
-                st.success("🧪 **Conclusão:** Diferença estatisticamente significativa encontrada!")
-            else:
-                st.info("🔍 **Conclusão:** Não foi detectada diferença significativa.")
-
-        except Exception as e:
-            st.error(f"⚠️ **Erro na análise:** {str(e)}")
-    else:
-        st.warning("⚠️ **Dados incompletos!** É necessário que a planilha contenha colunas 'grupo' e 'vendas'.")
+   
 
  # Interface principal
 
